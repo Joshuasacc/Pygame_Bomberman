@@ -5,6 +5,8 @@ from blocks import Hard_block, Soft_Block
 from random import choice
 import gamesetting as gs
 
+#Hello this is a test comment for github.
+
 class Game:
   def __init__(self, main, assets):
     # LINK WITH MAIN CLASS AND ASSETS
