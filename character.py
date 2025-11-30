@@ -3,7 +3,7 @@ import pygame
 import gamesetting as gs
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, game,image_dict, group, row_num,col_num, size):
+    def __init__(self, game,image_dict):
         super().__init__()
         self.GAME = game
 
