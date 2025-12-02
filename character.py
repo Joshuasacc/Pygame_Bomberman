@@ -79,7 +79,7 @@ class Character(pygame.sprite.Sprite):
             self.anim_time_set = pygame.time.get_ticks()
 
     def move(self,action):
-    
+       
         if not self.alive:
             return
         
@@ -114,3 +114,18 @@ class Character(pygame.sprite.Sprite):
             self.rect.topleft = (self.x + offset,  self.y + offset) # Reset rect to old safe spot
 
         self.animate(action)   
+
+        # SNAP THE PLAYER TO GRID COORDINATES MAKING NAVIGATOR EASIER
+        x_pos = self.x % gs.SIZE
+        y_post = (self.y - gs.Y_OFFSET) % gs.SIZE
+
+        if action in ["walk_up","walk_down"]:
+            if x_pos <= 12:
+                self.x = self.x - x_pos
+            if x_pos >= 52:
+                self.x = self.x + (gs.SIZE - x_pos)
+        elif action in ["walk_left", "walk_right"]:
+            if y_post <= 12:
+                self.y = self.y - y_post
+            if y_post >= 52:
+                self.y = self.y + (gs.SIZE - y_post)                    
