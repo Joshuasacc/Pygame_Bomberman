@@ -115,7 +115,12 @@ class Character(pygame.sprite.Sprite):
 
         self.animate(action)   
 
-        # SNAP THE PLAYER TO GRID COORDINATES MAKING NAVIGATOR EASIER
+                    
+        """ SNAP THE PLAYER TO GRID COORDINATES MAKING NAVIGATOR EASIER"""
+        self.snap_to_grid(action)
+
+    def snap_to_grid(self,action):
+        """ SNAP THE PLAYER TO GRID COORDINATES MAKING NAVIGATOR EASIER"""
         x_pos = self.x % gs.SIZE
         y_post = (self.y - gs.Y_OFFSET) % gs.SIZE
 
@@ -128,6 +133,4 @@ class Character(pygame.sprite.Sprite):
             if y_post <= 12:
                 self.y = self.y - y_post
             if y_post >= 52:
-                self.y = self.y + (gs.SIZE - y_post)                    
-
-
+                self.y = self.y + (gs.SIZE - y_post)
