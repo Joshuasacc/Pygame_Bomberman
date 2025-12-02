@@ -65,7 +65,7 @@ class Character(pygame.sprite.Sprite):
 
     def draw(self, window):
         window.blit(self.image, (self.x, self.y))
-        pygame.draw.rect(window, gs.RED, self.rect, 1)
+        #pygame.draw.rect(window, gs.RED, self.rect, 1)
 
     def animate(self,action):
         """Switches between images in order to animate movement"""

@@ -60,13 +60,13 @@ class Assets:
     def load_sprites(self, spritesheet, xcoord, ycoord, width, height):
         """Load individual sprites from a sprite sheet."""
         # CREATE AN EMPTY SURFACE
-        image = pygame.Surface((width, height))
+        image = pygame.Surface((width, height), pygame.SRCALPHA)
         # Fill the surface with a off color
-        image.fill((0, 0, 1))
+        #image.fill((0, 0, 1))
         # BLIT THE SPRITE SHEET ONTO THE NEW SURFACE
         image.blit(spritesheet, (0, 0), (xcoord, ycoord, width, height))
         # CONVERT BLACK COLOURS ON THE NEW IMAGE TO TRANSPARENT 
-        image.set_colorkey(gs.BLACK)
+        #image.set_colorkey(gs.BLACK)
         return image
     
     def load_sprite_range(self, image_dict, spritesheet, row, col, width, height, resize=False): # Changed defaults
