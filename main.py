@@ -15,6 +15,9 @@ class Bomberman:
     screen_h = min(gs.SCREENHEIGHT, info.current_h)
     # Create a resizable window so players can adjust size at runtime
     self.screen = pygame.display.set_mode((screen_w, screen_h), pygame.RESIZABLE)
+    # Track windowed size so we can toggle fullscreen and restore the windowed mode
+    self.windowed_size = (screen_w, screen_h)
+    self.fullscreen = False
 
     # 3. Set the title
     pygame.display.set_caption("Bomba~ Na!")
@@ -33,8 +36,6 @@ class Bomberman:
 
   # Method for handling all user input (keyboard, mouse, window events)
   def input(self):
-
-    # Delegate input handling to the specific Game object (e.g., player movement, bomb dropping)
     # Poll events centrally so we can handle window resize and forward events
     events = pygame.event.get()
     for event in events:
@@ -43,12 +44,35 @@ class Bomberman:
       elif event.type == pygame.KEYDOWN:
         if event.key == pygame.K_ESCAPE:
           self.running = False
+        elif event.key == pygame.K_F11:
+          # Toggle fullscreen mode
+          info = pygame.display.Info()
+          if not self.fullscreen:
+            # Enter exclusive fullscreen at current display resolution
+            self.fullscreen = True
+            # Save the last windowed size before switching
+            try:
+              self.windowed_size = (self.screen.get_width(), self.screen.get_height())
+            except Exception:
+              pass
+            flags = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+            self.screen = pygame.display.set_mode((info.current_w, info.current_h), flags)
+            pygame.mouse.set_visible(False)
+          else:
+            # Restore previous windowed size and make resizable again
+            self.fullscreen = False
+            w, h = self.windowed_size
+            self.screen = pygame.display.set_mode((w, h), pygame.RESIZABLE)
+            pygame.mouse.set_visible(True)
       elif event.type == pygame.VIDEORESIZE:
         # Clamp resize to the current display resolution
         info = pygame.display.Info()
         new_w = min(event.w, info.current_w)
         new_h = min(event.h, info.current_h)
+        # Only update the stored windowed size when not fullscreen
         self.screen = pygame.display.set_mode((new_w, new_h), pygame.RESIZABLE)
+        if not getattr(self, 'fullscreen', False):
+          self.windowed_size = (new_w, new_h)
 
     # Pass the event list to the Game so it can forward to the Character, etc.
     self.GAME.input(events)
