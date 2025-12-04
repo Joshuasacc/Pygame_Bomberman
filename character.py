@@ -57,6 +57,7 @@ class Character(pygame.sprite.Sprite):
         self.alive = True
         self.speed = 3  # Pixels per frame when moving
         self.bomb_limit = 1
+        self.remote = True
 
 
         # CHARACTER ACTION/ANIMATION STATE
@@ -107,8 +108,15 @@ class Character(pygame.sprite.Sprite):
                 elif event.key == pygame.K_SPACE:
                     row, col, = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // gs.SIZE)
                     if self.GAME.level_matrix[row][col] == "_" and self.bomb_planted < self.bomb_limit:
-                        Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"], self.GAME.groups["bomb"], row, col, gs.SIZE)  
+                        Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"], 
+                             self.GAME.groups["bomb"], row, col, gs.SIZE, self.remote)  
                         print(self.bomb_planted)
+                elif event.key == pygame.K_LCTRL and self.remote :
+                    bomb_list = self.GAME.groups["bomb"].sprites()
+                    bomb_list[-1].explode()
+
+
+
 
         # Continuous key polling for smooth movement
         keys_pressed = pygame.key.get_pressed() 
@@ -284,7 +292,7 @@ class Character(pygame.sprite.Sprite):
         self.GAME.update_camera(self.rect.centerx, self.rect.centery)
 
 class Bomb(pygame.sprite.Sprite):
-    def __init__(self,game, image_list, group, row_num, col_num, size):
+    def __init__(self,game, image_list, group, row_num, col_num, size, remote):
         super().__init__(group)
         self.GAME = game
 
@@ -302,6 +310,8 @@ class Bomb(pygame.sprite.Sprite):
         self.bomb_counter = 1
         self.bomb_timer = 12    
         self.passable = True  # Bombs are passable until they explode
+        self.remote = remote
+
 
         # Image
         self.index = 0
@@ -322,7 +332,7 @@ class Bomb(pygame.sprite.Sprite):
         # Do NOT change self.x/self.y here; bombs are stationary after placement.
         self.animation()
         self.planted_bomb_player_collision()
-        if self.bomb_counter == self.bomb_timer:
+        if self.bomb_counter == self.bomb_timer and not self.remote:
             self.explode()
 
 
