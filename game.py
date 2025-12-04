@@ -5,43 +5,73 @@ from blocks import Hard_block, Soft_Block
 from random import choice
 import gamesetting as gs
 
-#Hello this is a test comment for github.
+# ============================================================================
+# FILE: game.py - CORE GAME LOGIC AND STATE MANAGEMENT
+# ============================================================================
+# PURPOSE:
+#   Manages all game logic including:
+#   - Level generation and block placement (hard and soft blocks)
+#   - Game state updates (sprite updates, camera interpolation)
+#   - Camera system with deadzone and smooth following
+#   - Rendering of game world (background, sprites, camera offsets)
+#
+# DEPENDENCIES:
+#   - pygame: Sprite groups, rendering
+#   - Character: Player sprite class
+#   - Hard_block, Soft_Block: Block sprite classes
+#   - gamesetting: Game configuration and constants
+# ============================================================================
 
+# ============================================================================
+# CLASS: Game - Main game state and logic controller
+# ============================================================================
 class Game:
   def __init__(self, main, assets):
+    """
+    CONSTRUCTOR - Initialize game state and world
+    
+    INITIALIZATION STEPS:
+    1. Store references to main Bomberman instance and Assets
+    2. Create sprite groups for organizing game objects
+    3. Create the player character at starting position (row 3, col 2)
+    4. Initialize camera system with offsets and smoothing parameters
+    5. Generate the level matrix and populate with blocks
+    """
     # LINK WITH MAIN CLASS AND ASSETS
     self.MAIN = main
     self.ASSETS = assets
 
-    # Player Character 
-    #self.PLAYER = Character(self,self.ASSETS.player_char)
-
-    # Groups
-    # self.hard_blocks = pygame.sprite.Group()
-    # self.soft_block = pygame.sprite.Group()
+    # Sprite groups for organizing and updating game objects
     self.groups = {
-      "hard_block": pygame.sprite.Group(),
-      "soft_block": pygame.sprite.Group(),
-      "player": pygame.sprite.Group()  }
+      "hard_block": pygame.sprite.Group(),    # Static indestructible barriers
+      "soft_block": pygame.sprite.Group(),    # Destructible blocks
+      "player": pygame.sprite.Group()         # Player character
+    }
     
-    # Player Character 
-    self.PLAYER = Character(self,self.ASSETS.player_char, self.groups["player"],3,2,gs.SIZE)
+    # Create player character at starting position (grid: row 3, col 2)
+    self.PLAYER = Character(self, self.ASSETS.player_char, self.groups["player"], 3, 2, gs.SIZE)
 
-    # Camera offsets (current and target) and smoothing
+    # CAMERA SYSTEM - Smooth following with deadzone
+    # Current camera offsets (in pixels) - what's actually rendered
     self.x_camera_offset = 0
     self.y_camera_offset = 0
+    
+    # Target camera offsets - where camera wants to be
     self.cam_target_x = 0
     self.cam_target_y = 0
-    # How quickly the camera follows the target (0..1). Lower = smoother/slower.
+    
+    # Camera lerp: how quickly camera follows (0.14 = smooth, slower follow)
+    # Lower values = smoother, slower follow. Higher values = snappier, more direct follow
     self.camera_lerp = 0.14
-    # Deadzone ratio: fraction of the screen width/height that forms the central area
-    # where the player can move without moving the camera. 0.6 means 60% of the
-    # screen is the deadzone; camera moves only when player leaves that area.
+    
+    # Deadzone ratio: Fraction of screen where player can move without camera moving
+    # 0.6 = 60% of screen (centered) is the deadzone
+    # Camera only moves when player leaves this central area
     self.deadzone_ratio = 0.6
     
-    #Level Information
+    # LEVEL INFORMATION
     self.level = 1
-    self.level_matrix = self.generate_level_matrix(gs.ROWS,gs.COLS)
+    self.level_matrix = self.generate_level_matrix(gs.ROWS, gs.COLS)
 
   def input(self, events):
     # Expect an events list forwarded from main
