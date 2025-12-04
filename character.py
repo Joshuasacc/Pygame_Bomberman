@@ -291,6 +291,9 @@ class Bomb(pygame.sprite.Sprite):
         self.x = self.col * self.size
         self.y = (self.row * self.size) + gs.Y_OFFSET
 
+        # Bomb Attributes
+        self.bomb_counter = 1
+        self.bomb_timer = 12    
 
         # Image
         self.index = 0
@@ -298,9 +301,49 @@ class Bomb(pygame.sprite.Sprite):
         self.image = self.image_list[self.index]
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        # Animation Settings
+        self.anim_length = len(self.image_list)
+        self.anim_frame_time = 200  # milliseconds per frame
+        self.anim_timer = pygame.time.get_ticks()
+
+        # Insert into level matrix
+        self.insert_bomb_into_grid()
+
     def update(self):
-        pass
+        # Keep the collision rect in sync with the bomb's fixed world position.
+        # Do NOT change self.x/self.y here; bombs are stationary after placement.
+        self.animation()
+        self.rect.topleft = (int(self.x), int(self.y))
 
+    def draw(self, window, x_offset=0, y_offset=0):
+        """
+        DRAW - Render the bomb with camera offsets applied.
 
-    def draw (self, window, offset):
-        window.blit(self.image, (self.rect.x - offset, self.rect.y))
+        PARAMETERS:
+        - window: pygame.Surface
+        - x_offset: horizontal camera offset
+        - y_offset: vertical camera offset
+
+        NOTES:
+        - Use the bomb's stored world coordinates (self.x/self.y) so the bomb
+          remains fixed in the world even if the player moves or the camera scrolls.
+        - Keep rect synced in update(); draw only uses self.x/self.y for rendering.
+        """
+        window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
+    def insert_bomb_into_grid(self):
+        """Add the bomb object to the level matrix"""
+        self.GAME.level_matrix[self.row][self.col] = self
+        print()
+        for row in self.GAME.level_matrix:
+            print(row)
+
+    def animation(self):
+        if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
+            self.index += 1
+            self.index = self.index % self.anim_length
+            self.image = self.image_list[self.index]
+            self.anim_timer = pygame.time.get_ticks()
+
+    def __repr__(self):
+        return "'!'"         
+            
