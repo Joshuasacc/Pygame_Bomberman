@@ -41,6 +41,17 @@ class Assets:
             resize=True            
         )
 
+        self.sprite_sheet = self.load_sprite_sheet("images", "bomb.png") # Removed hardcoded size | THIS IS FOR BOMB
+        self.bomb = self.load_sprite_range(
+            gs.BOMB, # Use the coordinates defined in gamesetting
+            self.sprite_sheet, # Use the same sprite sheet
+            row=gs.TILE_HEIGHT, 
+            col=gs.TILE_WIDTH, 
+            width=gs.TILE_WIDTH - 1,
+            height=gs.TILE_HEIGHT,
+            resize=True            
+        )
+
         #This is from gemini as a test
         # --- ADD THIS CODE BELOW ---
         # Create a Green Background Block manually

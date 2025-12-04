@@ -98,6 +98,10 @@ class Character(pygame.sprite.Sprite):
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.GAME.MAIN.running = False
+                elif event.key == pygame.K_SPACE:
+                    row, col, = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // gs.SIZE)
+                    if self.GAME.level_matrix[row][col] == "_":
+                        Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"], self.GAME.groups["bomb"], row, col, gs.SIZE)  
 
         # Continuous key polling for smooth movement
         keys_pressed = pygame.key.get_pressed() 
@@ -271,3 +275,32 @@ class Character(pygame.sprite.Sprite):
         
         # Update camera based on the center of the player (x and y)
         self.GAME.update_camera(self.rect.centerx, self.rect.centery)
+
+class Bomb(pygame.sprite.Sprite):
+    def __init__(self,game, image_list, group, row_num, col_num, size):
+        super().__init__(group)
+        self.GAME = game
+
+
+        # Level matrix position (in grid tiles)
+        self.row = row_num
+        self.col = col_num
+
+        # Coordinates
+        self.size = size
+        self.x = self.col * self.size
+        self.y = (self.row * self.size) + gs.Y_OFFSET
+
+
+        # Image
+        self.index = 0
+        self.image_list = image_list
+        self.image = self.image_list[self.index]
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def update(self):
+        pass
+
+
+    def draw (self, window, offset):
+        window.blit(self.image, (self.rect.x - offset, self.rect.y))

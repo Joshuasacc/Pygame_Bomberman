@@ -85,3 +85,5 @@ PLAYER = {
 #HARD_BLOCK = {"hard_block":[(0,1)]} #before  [(0.2,1.2)]}
 HARD_BLOCK = {"hard_block":[(0,1)]}
 SOFT_BLOCK = {"soft_block":[(0,7)]} #block for purple soft block [(0,7]}
+#BOMB = {"bomb": [(0,0),(0,1),(0,2),(0,3),(0,4),(0,5)]}  #bomb animation frames
+BOMB = {"bomb": [(0,2)]}  #bomb animation frames

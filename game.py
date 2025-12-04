@@ -45,6 +45,7 @@ class Game:
     self.groups = {
       "hard_block": pygame.sprite.Group(),    # Static indestructible barriers
       "soft_block": pygame.sprite.Group(),    # Destructible blocks
+      "bomb": pygame.sprite.Group(),          # Bombs placed by player
       "player": pygame.sprite.Group()         # Player character
     }
     
