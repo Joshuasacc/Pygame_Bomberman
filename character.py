@@ -59,9 +59,9 @@ class Character(pygame.sprite.Sprite):
         # CHARACTER ATTRIBUTES
         self.alive = True
         self.speed = 3  # Pixels per frame when moving
-        self.bomb_limit = 1
+        self.bomb_limit = 2
         self.remote = True
-        self.power = 1
+        self.power = 2
 
 
         # CHARACTER ACTION/ANIMATION STATE
@@ -419,29 +419,17 @@ class Explosion(pygame.sprite.Sprite):
         self.image = self.image_dict[self.image_type][self.index]
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+        # Streng 
+        self.power = power
+        self.passable = False
+        self.calculate_explosion_path()
+
+
     def update(self):
         self.animate()
     
     def draw(self, window, x_offset):
         window.blit(self.image, (self.x - x_offset, self.y))
-
-    # def draw(self, window, x_offset=0, y_offset=0):
-    #     """
-    #     DRAW - Render the explosion sprite with camera offsets applied.
-
-    #     PARAMETERS:
-    #     - window: pygame.Surface to draw on
-    #     - x_offset: horizontal camera offset (defaults to 0)
-    #     - y_offset: vertical camera offset (defaults to 0)
-
-    #     This uses the stored world coordinates (`self.x`, `self.y`) and subtracts
-    #     the camera offsets so the explosion stays fixed in the world while the
-    #     camera moves. Matching the `draw(window, cam_x, cam_y)` signature used in
-    #     `Game.draw()` prevents TypeError fallbacks and ensures both axes are
-    #     handled correctly.
-    #     """
-    #     # Use world coordinates and apply both camera offsets (cast to int for blit)
-    #     window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
 
     def animate(self):
         if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
@@ -451,3 +439,63 @@ class Explosion(pygame.sprite.Sprite):
                 return
             self.image = self.image_dict[self.image_type][self.index]
             self.anim_timer = pygame.time.get_ticks()        
+
+    def calculate_explosion_path(self):
+        """Explode adjacent cells, depedent on power and available cells"""        
+        #                   left, right, up, down    
+        valid_directions = [True, True, True, True]
+        for power_cell in range(self.power):
+            # Get a list of the 4 directions, tuple of cell values
+            directions = self.calculate_direction_cells(power_cell)
+            print(directions)
+            # Check the cells in each direction per the directions list above
+            for ind, dir in enumerate (directions):
+                # If the corresponding direction is still valid_directions is False, skip
+                if not valid_directions[ind]:
+                    continue
+                # If the current cell being checked is an empty cells, check the next cell in that direction
+                # To determine type of image display, wether it is a mid or end
+                if self.GAME.level_matrix[dir[0]][dir[1]] == "_":
+                    # If the end of the power range, use the end piece
+                    if power_cell == self.power - 1:
+                        print(f"explode{dir[0], [dir[1]]}, end_piece") 
+                    # Check if the next cell in sequence is a barrier, use end piece if true, and change valid_directions
+                    # to false
+                    elif self.GAME.level_matrix[dir[2]][dir[3]] in self.GAME.groups["hard_block"].sprites():
+                        print(f"explode{dir[0],[dir[1]]} end_piece")
+                        valid_directions[ind] = False
+                    # If next cell in sequence is not a barrier, and not the end of the flame power, use mid image
+                    else:
+                        print(f"explode{dir[0], dir[1]}, mid flame")    
+                # if the current cell being checked is not empty, but is a bomb, detonate the bomb
+                elif self.GAME.level_matrix[dir[0]][dir[1]] in self.GAME.groups["bomb"].sprites():
+                    self.GAME.level_matrix[dir[0]][dir[1]].explode()   
+                    valid_directions[ind] = False
+                # If the current cell being checked is not empty, but is a soft box - destroy it
+                elif self.GAME.level_matrix[dir[0]][dir[1]] in self.GAME.groups["soft_block"].sprites():
+                    print(f"explode{dir[0],[dir[1]]} Destroy Soft Block")
+                    valid_directions[ind] = False   
+                # If the current cell being checked is not empty, but is a special box
+                
+                # If the current cell being checked is not empty, or a bomb, or a soft block, or special
+                else:
+                    valid_directions[ind] = False
+                    continue
+
+
+    def calculate_direction_cells(self,cell):
+        """Return a list of the four cells in the up and down, left and right directions"""        
+        left = (self.row_num, self.col_num - (cell + 1), # Check cell immediate left
+                self.row_num, self.col_num - (cell + 2), # Check cell left to that
+                "left_end", "left_mid")
+        right = (self.row_num, self.col_num + (cell + 1), # Check cell immediate right
+                self.row_num, self.col_num + (cell + 2), # Check cell right to that
+                "right_end", "right_mid")
+        up = (self.row_num - (cell +1), self.col_num,  # Check all immediete up
+              self.row_num - (cell + 2), self.col_num, # Check cell up to that
+              "up_end", "up_mid")
+        down = (self.row_num + (cell +1), self.col_num,  # Check all immediete down
+              self.row_num + (cell + 2), self.col_num, # Check cell below to that
+              "down_end", "down_mid")
+        return [left, right, up, down]      
+        
