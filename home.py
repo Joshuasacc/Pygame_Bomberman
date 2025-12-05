@@ -20,34 +20,41 @@ class Button:
         self.current_color = self.base_color
         self.font = font
         self.scale = 1.0
-        self.image = image  # pygame.Surface or None
+        self.image = image
         self.callback = callback
         self._is_hover = False
 
     def draw(self, surface):
-        # compute scaled rect for hover effect
+        # scale for hover effect
         scaled_w = max(1, int(self.rect.width * self.scale))
         scaled_h = max(1, int(self.rect.height * self.scale))
         scaled_x = int(self.rect.x - (scaled_w - self.rect.width) / 2)
         scaled_y = int(self.rect.y - (scaled_h - self.rect.height) / 2)
         scaled_rect = pygame.Rect(scaled_x, scaled_y, scaled_w, scaled_h)
 
+        # --- DRAW IMAGE BUTTON ---
         if self.image:
-            # scale button image to the scaled rect
             img = pygame.transform.smoothscale(self.image, (scaled_w, scaled_h))
             surface.blit(img, scaled_rect)
-            # faint overlay while hovered
+
+            # overlay when hovered
             if self._is_hover:
                 overlay = pygame.Surface((scaled_w, scaled_h), pygame.SRCALPHA)
                 overlay.fill((255, 255, 255, 40))
                 surface.blit(overlay, scaled_rect)
+
+            # TEXT ON IMAGE (✔ added)
+            text_surf = self.font.render(self.text, True, (255, 255, 255))
+            surface.blit(text_surf, text_surf.get_rect(center=scaled_rect.center))
+
+        # --- DRAW NORMAL RECT BUTTON ---
         else:
             pygame.draw.rect(surface, self.current_color, scaled_rect, border_radius=10)
             text_surf = self.font.render(self.text, True, (255, 255, 255))
             surface.blit(text_surf, text_surf.get_rect(center=scaled_rect.center))
 
     def update(self, mouse_pos):
-        # hover detection uses original rect so scale doesn't move the hitbox
+        # hover effect
         self._is_hover = self.rect.collidepoint(mouse_pos)
         if self._is_hover:
             self.current_color = self.hover_color
@@ -62,7 +69,7 @@ class Button:
                 if self.callback:
                     self.callback()
 
-# callbacks
+# --- CALLBACKS ---
 def start_game():
     print("START pressed - implement game start logic here")
 
@@ -77,30 +84,30 @@ def exit_game():
     pygame.quit()
     sys.exit()
 
-# helper to get image from assets (may be fallback surface)
+# asset helper
 def maybe_image(name):
     return assets.get(name)
 
-# helper to create evenly spaced buttons centered on the screen
+# button generator
 def create_row_buttons(labels, image_keys, callbacks, y=300, btn_w=180, btn_h=60, spacing=40):
     n = len(labels)
     total_w = n * btn_w + (n - 1) * spacing
     start_x = (SCREEN_SIZE[0] - total_w) // 2
     btns = []
+
     for i, label in enumerate(labels):
         x = start_x + i * (btn_w + spacing)
-        img = maybe_image(image_keys[i]) if image_keys and i < len(image_keys) else None
+        img = maybe_image(image_keys[i]) if image_keys else None
         btn = Button(label, x, y, btn_w, btn_h, font=assets["font"], image=img, callback=callbacks[i])
         btns.append(btn)
+
     return btns
 
-# Define labels, image keys (must match keys returned by load_assets), and callbacks
 labels = ["START", "RESUME", "PAUSE", "EXIT"]
-image_keys = ["start_btn", "resume_btn", "pause_btn", "exit_btn"]  # adjust if your asset keys differ
+image_keys = ["start_btn", "resume_btn", "pause_btn", "exit_btn"]
 callbacks = [start_game, resume_game, pause_game, exit_game]
 
-# Create four evenly spaced, centered buttons (includes Pause)
-buttons = create_row_buttons(labels, image_keys, callbacks, y=300, btn_w=180, btn_h=60, spacing=40)
+buttons = create_row_buttons(labels, image_keys, callbacks)
 
 running = True
 while running:
@@ -110,14 +117,13 @@ while running:
     for event in events:
         if event.type == pygame.QUIT:
             running = False
-
         for b in buttons:
             b.handle_event(event)
 
     for b in buttons:
         b.update(mouse_pos)
 
-    # draw background (scale if needed)
+    # background
     bg = assets.get("bg")
     if bg:
         if bg.get_size() != SCREEN_SIZE:
@@ -128,6 +134,7 @@ while running:
     else:
         screen.fill((30, 30, 30))
 
+    # draw buttons
     for b in buttons:
         b.draw(screen)
 
