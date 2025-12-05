@@ -52,6 +52,22 @@ class Assets:
             resize=True            
         )
 
+        self.sprite_sheet = self.load_sprite_sheet("images", "bombFire.png")# THIS IS FOR EXPLOSION
+        self.explosion = self.load_sprite_range(
+            gs.EXPLOSION, # Use the coordinates defined in gamesetting  
+            self.sprite_sheet, # Use the same sprite sheet
+            row=gs.TILE_HEIGHT, 
+            col=gs.TILE_WIDTH, 
+            width=gs.TILE_WIDTH - 1,
+            height=gs.TILE_HEIGHT,
+            resize=True            
+        )
+
+        for image_list in ["right_end", "right_mid", "down_end", "down_mid"]:
+            self.rotate_images_in_list(self.explosion[image_list], 180)
+
+    
+
         #This is from gemini as a test
         # --- ADD THIS CODE BELOW ---
         # Create a Green Background Block manually
@@ -100,3 +116,9 @@ class Assets:
                     image = pygame.transform.scale(image, (gs.SIZE, gs.SIZE)) # Example scale
                 animation_images[animation].append(image)
         return animation_images
+    
+    def rotate_images_in_list(self,image_list, rotation):
+        """Cycle through a list of images and rotate each by the given angle."""
+        for ind, images in enumerate(image_list):
+            image = pygame.transform.rotate(images, rotation)
+            image_list[ind] = image

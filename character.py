@@ -58,6 +58,7 @@ class Character(pygame.sprite.Sprite):
         self.speed = 3  # Pixels per frame when moving
         self.bomb_limit = 1
         self.remote = True
+        self.power = 1
 
 
         # CHARACTER ACTION/ANIMATION STATE
@@ -109,14 +110,11 @@ class Character(pygame.sprite.Sprite):
                     row, col, = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // gs.SIZE)
                     if self.GAME.level_matrix[row][col] == "_" and self.bomb_planted < self.bomb_limit:
                         Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"], 
-                             self.GAME.groups["bomb"], row, col, gs.SIZE, self.remote)  
+                             self.GAME.groups["bomb"], self.power ,row, col, gs.SIZE, self.remote)  
                         print(self.bomb_planted)
-                elif event.key == pygame.K_LCTRL and self.remote :
+                elif event.key == pygame.K_LCTRL and self.remote and self.GAME.groups["bomb"]:
                     bomb_list = self.GAME.groups["bomb"].sprites()
                     bomb_list[-1].explode()
-
-
-
 
         # Continuous key polling for smooth movement
         keys_pressed = pygame.key.get_pressed() 
@@ -292,7 +290,7 @@ class Character(pygame.sprite.Sprite):
         self.GAME.update_camera(self.rect.centerx, self.rect.centery)
 
 class Bomb(pygame.sprite.Sprite):
-    def __init__(self,game, image_list, group, row_num, col_num, size, remote):
+    def __init__(self,game, image_list, group, power, row_num, col_num, size, remote):
         super().__init__(group)
         self.GAME = game
 
@@ -311,6 +309,7 @@ class Bomb(pygame.sprite.Sprite):
         self.bomb_timer = 12    
         self.passable = True  # Bombs are passable until they explode
         self.remote = remote
+        self.power = power
 
 
         # Image
@@ -371,11 +370,17 @@ class Bomb(pygame.sprite.Sprite):
     def remove_bomb_from_grid(self):
         """Remove the bomb object from the level matrix"""
         self.GAME.level_matrix[self.row][self.col] = "_"
-        self.GAME.PLAYER.bomb_planted += 1
+        # OLD CODE (BUG - incremented instead of decremented):
+        # self.GAME.PLAYER.bomb_planted += 1
+        
+        # NEW CODE (FIX - decrement to reflect bomb removal):
+        self.GAME.PLAYER.bomb_planted -= 1  # Subtract 1 so player can plant again
 
     def explode(self):
         """Destroy the bomb and remove from the level matrix"""    
         self.kill()
+        Explosion(self.GAME, self.GAME.ASSETS.explosion, "centre", self.power, 
+                  self.GAME.groups["explosion"], self.row, self.col, self.size)
         self.remove_bomb_from_grid()
 
     def planted_bomb_player_collision(self):
@@ -388,3 +393,58 @@ class Bomb(pygame.sprite.Sprite):
     def __repr__(self):
         return "'!'"         
             
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, game, image_dict, image_type, power, group, row_num, col_num, size):
+        super().__init__(group)
+        self.GAME = game
+
+        # Level matrix position (in grid tiles)
+        self.row = row_num
+        self.col = col_num
+
+        # Sprite Coordinates
+        self.size = size
+        self.y = (self.row * self.size) + gs.Y_OFFSET
+        self.x = self.col * self.size
+
+        # Explosion Image and animation
+        self.index = 0
+        self.anim_frame_time = 75 
+        self.anim_timer = pygame.time.get_ticks()
+
+        self.image_dict = image_dict    
+        self.image_type = image_type 
+
+        self.image = self.image_dict[self.image_type][self.index]
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
+    def update(self):
+        self.animate()
+
+    # OLD CODE (BROKEN - only 1 offset, doesn't apply y_offset):
+    # def draw (self,window, x_offset):
+    #     window.blit(self.image, (self.rect.x - x_offset, self.rect.y))
+    
+    def draw(self, window, x_offset=0, y_offset=0):
+        """
+        DRAW - Render the explosion sprite with camera offsets applied.
+        
+        PARAMETERS:
+        - window: pygame.Surface to draw on
+        - x_offset: horizontal camera offset (defaults to 0)
+        - y_offset: vertical camera offset (defaults to 0)
+        
+        FIX: Now accepts BOTH x and y offsets (matching Character and Bomb signatures).
+        Uses stored world coordinates (self.x, self.y) to stay fixed on the map
+        even as the camera scrolls.
+        """
+        window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
+
+    def animate(self):
+        if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
+            self.index += 1
+            if self.index == len(self.image_dict[self.image_type]):
+                self.kill()
+                return
+            self.image = self.image_dict[self.image_type][self.index]
+            self.anim_timer = pygame.time.get_ticks()        
