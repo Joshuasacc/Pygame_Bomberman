@@ -20,7 +20,7 @@ class Assets:
         )
 
         #self.sprite_sheet = self.load_sprite_sheet("images", "BombermanPCE-tiles.png") # Removed hardcoded size
-        self.sprite_sheet = self.load_sprite_sheet("images", "sprite_sheet (1).png") # Removed hardcoded size | THIS IS FOR BLOCKS
+        self.sprite_sheet = self.load_sprite_sheet("images", "sprite_sheet (1).png") # Removed hardcoded size | THIS IS FOR BLOCKS # sprite_sheet (1).png
         self.hard_block = self.load_sprite_range(
             gs.HARD_BLOCK, 
             self.sprite_sheet, 
@@ -63,8 +63,8 @@ class Assets:
             resize=True            
         )
 
-        for image_list in ["right_end", "right_mid", "down_end", "down_mid"]:
-            self.rotate_images_in_list(self.explosion[image_list], 180)
+        for image_list in ["right_end", "right_mid", "down_end", "down_mid"]: 
+            self.rotate_images_in_list(self.explosion[image_list], 180) 
 
     
 
@@ -72,7 +72,7 @@ class Assets:
         # --- ADD THIS CODE BELOW ---
         # Create a Green Background Block manually
         bg_surface = pygame.Surface((gs.SIZE, gs.SIZE))
-        bg_surface.fill(gs.PITCH_RED) # Fills the square with Green color
+        bg_surface.fill(gs.YELLOWISH) # Fills the square with Green color
         
         # Save it so game.py can find it
         self.background = {"background": [bg_surface]}
