@@ -36,10 +36,11 @@ class Enemy(pygame.sprite.Sprite):
     self.image = self.image_dict[self.action][self.index]
     self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
-def update(self):
-  pass
+  def update(self):
+   pass
 
-def draw(self, window, x_offset):
-  window.blit(self.image,(self.rect.x - x_offset, self.rect.y))
+  def draw(self, window, x_offset=0, y_offset=0):
+    """Render enemy sprite with camera offsets applied to both axes."""
+    window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
 
 

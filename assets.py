@@ -66,6 +66,8 @@ class Assets:
 
         for image_list in ["right_end", "right_mid", "down_end", "down_mid"]: 
             self.rotate_images_in_list(self.explosion[image_list], 180) 
+        
+        # Load enemy sprite with colorkey enabled (to make black background transparent)
         self.ballom = self.load_sprite_range(
             gs.BALLOM, 
             self.sprite_sheet,
@@ -73,7 +75,8 @@ class Assets:
             col=16,
             width=16,
             height=16,
-            resize=True
+            resize=True,
+            apply_colorkey=True  # ← Only apply colorkey for enemy sprites
         )    
     
 
@@ -91,7 +94,6 @@ class Assets:
     def load_sprite_sheet(self, path, file_name): # Removed width, height arguments
         """Load a sprite sheet.""" 
         image = pygame.image.load(f"{path}/{file_name}").convert_alpha()
-        # image = pygame.transform.scale(image, (width, height)) # REMOVED SCALING
         return image
     
     def load_sprites(self, spritesheet, xcoord, ycoord, width, height):
@@ -102,12 +104,17 @@ class Assets:
         #image.fill((0, 0, 1))
         # BLIT THE SPRITE SHEET ONTO THE NEW SURFACE
         image.blit(spritesheet, (0, 0), (xcoord, ycoord, width, height))
-        # CONVERT BLACK COLOURS ON THE NEW IMAGE TO TRANSPARENT 
-        #image.set_colorkey(gs.BLACK)
+        # CONVERT BLACK COLOURS ON THE NEW IMAGE TO TRANSPARENT
+        # NOTE: Don't set colorkey here - it will be lost when image is scaled
+        # It will be applied in load_sprite_range() AFTER scaling
         return image
     
-    def load_sprite_range(self, image_dict, spritesheet, row, col, width, height, resize=False): # Changed defaults
-        """Return a dictionary containing list of images for the animation."""
+    def load_sprite_range(self, image_dict, spritesheet, row, col, width, height, resize=False, apply_colorkey=False): # Changed defaults
+        """Return a dictionary containing list of images for the animation.
+        
+        Parameters:
+        - apply_colorkey: If True, converts black pixels to transparent (for enemy sprites)
+        """
         animation_images = {}
         for animation in image_dict.keys():
             animation_images[animation] = []
@@ -125,6 +132,10 @@ class Assets:
                 if resize:
                     # Scale to a more suitable game size, like 32x64 or 64x64
                     image = pygame.transform.scale(image, (gs.SIZE, gs.SIZE)) # Example scale
+                    # IMPORTANT: Apply colorkey AFTER resizing, only if requested
+                    # Scaling creates a new image, so colorkey must be reapplied
+                    if apply_colorkey:
+                        image.set_colorkey(gs.BLACK)
                 animation_images[animation].append(image)
         return animation_images
     

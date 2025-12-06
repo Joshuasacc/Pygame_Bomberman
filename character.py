@@ -167,7 +167,7 @@ class Character(pygame.sprite.Sprite):
         - Camera offsets shift the character position, creating the camera follow effect
         - Commented debug code shows how to draw the hitbox for debugging
         """
-        window.blit(self.image, (self.x - x_offset, self.y - y_offset))
+        window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
         #pygame.draw.rect(window, gs.RED, self.rect, 1)
 
         # Optional: Uncomment to see the red hitbox for debugging
@@ -442,8 +442,9 @@ class Explosion(pygame.sprite.Sprite):
     def update(self):
         self.animate()
     
-    def draw(self, window, x_offset):
-        window.blit(self.image, (self.x - x_offset, self.y))
+    def draw(self, window, x_offset=0, y_offset=0):
+        """Render explosion sprite with camera offsets applied to both axes."""
+        window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
 
     def animate(self):
         if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
@@ -536,10 +537,13 @@ class FireBall(pygame.sprite.Sprite):
 
 
     def update(self):
+        # Keep rect synced with world position for collision detection
+        self.rect.topleft = (int(self.x), int(self.y))
         self.animate()
 
-    def draw(self, window, x_offset):
-        window.blit(self.image, (self.rect.x - x_offset, self.rect.y))        
+    def draw(self, window, x_offset=0, y_offset=0):
+        """Render fireball sprite with camera offsets applied to both axes."""
+        window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))        
 
     def animate(self):
         if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
