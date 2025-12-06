@@ -314,7 +314,6 @@ class Bomb(pygame.sprite.Sprite):
         super().__init__(group)
         self.GAME = game
 
-
         # Level matrix position (in grid tiles)
         self.row = row_num
         self.col = col_num
@@ -330,7 +329,6 @@ class Bomb(pygame.sprite.Sprite):
         self.passable = True  # Bombs are passable until they explode
         self.remote = remote
         self.power = power
-
 
         # Image
         self.index = 0
@@ -376,7 +374,6 @@ class Bomb(pygame.sprite.Sprite):
         self.GAME.level_matrix[self.row][self.col] = self
         self.GAME.PLAYER.bomb_planted += 1
         
-
     def animation(self):
         if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
             self.index += 1
@@ -440,7 +437,6 @@ class Explosion(pygame.sprite.Sprite):
         self.power = power
         self.passable = False
         self.calculate_explosion_path()
-
 
     def update(self):
         self.animate()

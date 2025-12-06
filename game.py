@@ -189,8 +189,6 @@ class Game:
             item.draw(window)
 
 
-
-
   def generate_level_matrix(self,rows,cols):
     """Generate the basic level matrix"""
     matrix = []
@@ -244,13 +242,3 @@ class Game:
                                self.groups["soft_block"],row_num,col_num,)
            matrix[row_num][col_num] = cell
     return     
-    # for row_num, row in enumerate(matrix):
-    #   for col_num, col in enumerate(row):
-    #     if row_num == 0 or row_num == len(matrix)-1 or \
-    #         col_num == 0 or col_num == len(row)-1 or \
-    #           (row_num % 2 == 0 and col_num % 2 == 0):
-    #      matrix[row_num][col_num] = Hard_block(self, # Pass the Game instance
-    #                                   self.ASSETS.hard_block["hard_block"], 
-    #                                   self.hard_blocks,
-    #                                   row_num, col_num)
-    # return           
