@@ -84,7 +84,9 @@ PLAYER = {
 #HARD_BLOCK = {"hard_block":[(0,2)]}
 #HARD_BLOCK = {"hard_block":[(0,1)]} #before  [(0.2,1.2)]}
 HARD_BLOCK = {"hard_block":[(2,1)]} #0,1 default  #0,4
-SOFT_BLOCK = {"soft_block":[(0,0)]} #block for purple soft block [(0,7]}
+SOFT_BLOCK = {"soft_block":[(0,0),(0,1),(0,2),(0,3),
+                            (1,0),(1,2),(1,3),(1,4),
+                            (2,0),(2,1),(2,2)]} #block for purple soft block [(0,7]}
 BOMB = {"bomb": [(0,0),(0,1),(0,2),(0,1),]} #(0,4),(0,5)]}  #bomb animation frames
 # OLD COORDINATES (WRONG - all pointing to same rows, no full spread):
 EXPLOSION = {"centre":[(2,7),(2,8),(2,9),(2,10)],
