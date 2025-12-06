@@ -30,6 +30,9 @@ class Enemy(pygame.sprite.Sprite):
     self.direction = 'left'  # Initial direction
     self.dir_mvmt = {"left": -self.speed, "right": self.speed,
                      "up": -self.speed, "down": self.speed}
+    self.change_dir_timer = pygame.time.get_ticks()
+    self.dir_time = 1500 # Time in milliseconds before changing direction
+
 
     # Enemy Animation and Images
     self.index = 0
@@ -63,7 +66,6 @@ class Enemy(pygame.sprite.Sprite):
 
     # Reset the direction listing for the char to choose from
     directions = ["left","right","up","down"]
-    collision = False
 
     # Collision detection with Hard Blocks
     self.new_direction(self.GAME.groups["hard_block"], move_direction, directions)
@@ -73,6 +75,9 @@ class Enemy(pygame.sprite.Sprite):
 
     # Collision detection with Bombs
     self.new_direction(self.GAME.groups["bomb"], move_direction, directions)
+
+    # Perform a change of direction if sufficient time has elapsed
+    self.change_direction(directions)
 
     # Update the rect position of the enemy with the new x, y coordinates
     self.rect.update(self.x, self.y, self.size, self.size)
@@ -104,3 +109,49 @@ class Enemy(pygame.sprite.Sprite):
         directions.remove(dir)
         new_direction = choice(directions) 
         self.action = f"walk_{new_direction}"
+        self.change_dir_timer = pygame.time.get_ticks()
+
+  def change_direction(self, direction_list):
+    """Randomly change direction after a set amount of time elapsed"""       
+    # If timer has not elapsed, return out of method
+    if pygame.time.get_ticks() - self.change_dir_timer < self.dir_time:
+      return
+    
+    # If enemy coordinates do not alight with the grid coordinates
+    if self.x % self.size != 0 or (self.y - gs.Y_OFFSET) % self.size != 0:
+      return
+    
+    # Calculate which row and which column the enemy is currently in.
+    row = int(self.y - gs.Y_OFFSET) // self.size
+    col = int(self.x // self.size)
+
+    # If cell at row/column is not a 4 way intersection, return out of the method
+    if row % 2 == 0 or col % 2 == 0:
+      return
+    
+    # Check the 4 directions to see if movement is possible, update the directions list
+    self.determine_if_direction_valid(direction_list,row,col)
+
+    # Randomly select a new direction from the remaining list of directions
+    new_direction = choice(direction_list)
+    self.action = f"walk_{new_direction}"
+
+    # Reset the change direction timer
+    self.change_dir_timer = pygame.time.get_ticks()
+    return
+  
+  def determine_if_direction_valid(self,directions,row,col):  
+    """ Check the 4 direction to determine if move is possible"""
+    if self.GAME.level_matrix[row- 1][col] != "_":
+      directions.remove("up")
+    if self.GAME.level_matrix[row + 1][col] != "_":
+      directions.remove("down")
+    if self.GAME.level_matrix[row][col - 1] != "_":
+      directions.remove("left")
+    if self.GAME.level_matrix[row][col + 1] != "_":
+      directions.remove("right")
+
+    # If direction list empty, input "left"    
+    if len(directions) == 0:
+      directions.append("left")
+    return  
