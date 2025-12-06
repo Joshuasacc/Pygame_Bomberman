@@ -79,6 +79,23 @@ class Character(pygame.sprite.Sprite):
         self.image = self.image_dict[self.action][self.index]
 
         # HITBOX SETUP for collision detection
+        # # New (explicit, centered hitbox):
+        # img_w, img_h = self.image.get_size()
+        # # amount to shrink the visual sprite to form the hitbox (total width/height)
+        # shrink_x = 20  # total pixels removed from width (10 each side)
+        # shrink_y = 20  # total pixels removed from height
+        # hit_w = max(1, img_w - shrink_x)
+        # hit_h = max(1, img_h - shrink_y)
+
+        # # compute topleft so hitbox is centered inside the sprite at (self.x, self.y)
+        # hit_x = int(self.x + (img_w - hit_w) // 2)
+        # hit_y = int(self.y + (img_h - hit_h) // 2)
+
+        # self.rect = pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+
+        # # optional: keep the image size for future use
+        # self._image_w = img_w
+        # self._image_h = img_h
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.rect.inflate_ip(-20, -20)  # Shrink hitbox by 20px (10 on each side)
         self.offset = 10  # Offset to keep the hitbox centered inside the image

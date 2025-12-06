@@ -31,6 +31,7 @@ class Assets:
             resize=True            
         )
 
+        self.sprite_sheet = self.load_sprite_sheet("images", "BlockExplosion.png") # Removed hardcoded size | THIS IS FOR SOFT BLOCKS
         self.soft_block = self.load_sprite_range(
             gs.SOFT_BLOCK, # Use the coordinates defined in gamesetting
             self.sprite_sheet, # Use the same sprite sheet
@@ -51,10 +52,6 @@ class Assets:
             height=gs.TILE_HEIGHT,
             resize=True            
         )
-
-
-
-
 
         self.sprite_sheet = self.load_sprite_sheet("images", "spritesheet.png")# THIS IS FOR EXPLOSION
         self.explosion = self.load_sprite_range(
