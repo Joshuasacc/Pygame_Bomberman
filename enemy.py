@@ -27,6 +27,8 @@ class Enemy(pygame.sprite.Sprite):
     # Other Attributes
     self.destroyed = False
     self.direction = 'left'  # Initial direction
+    self.dir_mvmt = {"left": -self.speed, "right": self.speed,
+                     "up": -self.speed, "down": self.speed}
 
     # Enemy Animation and Images
     self.index = 0

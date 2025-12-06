@@ -61,7 +61,8 @@ class Assets:
             col=16,          # Source Column Width (16px)
             width=16,        # Width of the image to cut (16px)
             height=16,       # Height of the image to cut (16px)
-            resize=True      # This will scale it up to 64x64 for the game
+            resize=True,      # This will scale it up to 64x64 for the game
+            apply_colorkey=True  # Apply colorkey to make black transparent
         )
 
         for image_list in ["right_end", "right_mid", "down_end", "down_mid"]: 
@@ -143,4 +144,5 @@ class Assets:
         """Cycle through a list of images and rotate each by the given angle."""
         for ind, images in enumerate(image_list):
             image = pygame.transform.rotate(images, rotation)
+            image.set_colorkey(gs.BLACK)
             image_list[ind] = image
