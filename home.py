@@ -72,7 +72,7 @@ class Button:
 # --- CALLBACKS ---
 def start_game():
     print("START pressed - implement game start logic here")
-
+    
 
 # asset helper
 def maybe_image(name):
@@ -114,7 +114,7 @@ while running:
         b.update(mouse_pos)
 
     # background
-    bg = assets.get("bg")
+    bg = assets.get("homeMenu_bg.jpg")
     if bg:
         if bg.get_size() != SCREEN_SIZE:
             bg_draw = pygame.transform.smoothscale(bg, SCREEN_SIZE)

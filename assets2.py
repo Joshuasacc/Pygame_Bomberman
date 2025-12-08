@@ -36,9 +36,6 @@ def load_assets():
     # The correct form is either a list of tuples or a tuple of tuples, for example:
     for key, filename in (
         ("start_btn",  "start_btn.jpg"),
-        ("resume_btn", "resume_btn.jpg"),
-        ("pause_btn",  "pause_btn.jpg"),
-        ("exit_btn",   "exit_btn.jpg"),
     ):
         try:
             assets[key] = load_image(filename, use_alpha=False)
