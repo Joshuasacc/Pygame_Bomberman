@@ -1,6 +1,7 @@
 import pygame
 import sys
 from assets2 import load_assets
+from game2 import run_game
 
 pygame.init()
 
@@ -71,7 +72,9 @@ class Button:
 
 # --- CALLBACKS ---
 def start_game():
-    print("START pressed - implement game start logic here")
+    pygame.quit() #close menu
+    run_game()
+    sys.exit() #end the home menu to put in game
 
 
 # asset helper
