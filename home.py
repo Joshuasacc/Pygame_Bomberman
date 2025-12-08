@@ -1,13 +1,12 @@
 import pygame
 import sys
 from assets2 import load_assets
-from game2 import run_game
 
 pygame.init()
 
 SCREEN_SIZE = (1300, 700)
-screen = pygame.display.set_mode(SCREEN_SIZE)
-pygame.display.set_caption("Home Menu")
+screen = pygame.display.set_mode(SCREEN_SIZE, pygame.RESIZABLE)
+pygame.display.set_caption("Bomba~ Na!")
 clock = pygame.time.Clock()
 
 assets = load_assets()
@@ -44,7 +43,7 @@ class Button:
                 overlay.fill((255, 255, 255, 40))
                 surface.blit(overlay, scaled_rect)
 
-            # TEXT ON IMAGE (✔ added)
+            # TEXT ON IMAGE
             text_surf = self.font.render(self.text, True, (255, 255, 255))
             surface.blit(text_surf, text_surf.get_rect(center=scaled_rect.center))
 
@@ -70,11 +69,6 @@ class Button:
                 if self.callback:
                     self.callback()
 
-# --- CALLBACKS ---
-def start_game():
-    print("START pressed - implement game start logic here")
-    
-
 # asset helper
 def maybe_image(name):
     return assets.get(name)
@@ -94,42 +88,56 @@ def create_row_buttons(labels, image_keys, callbacks, y=300, btn_w=180, btn_h=60
 
     return btns
 
-labels = [""]
-image_keys = ["start_btn"]
-callbacks = [start_game]
+def run_menu(screen):
+    """
+    Run the home menu and return True if user wants to start game, False if quit
+    """
+    game_should_start = False
+    
+    def start_game():
+        nonlocal game_should_start
+        game_should_start = True
+    
+    labels = [""]
+    image_keys = ["start_btn"]
+    callbacks = [start_game]
 
-buttons = create_row_buttons(labels, image_keys, callbacks)
+    buttons = create_row_buttons(labels, image_keys, callbacks)
 
-running = True
-while running:
-    events = pygame.event.get()
-    mouse_pos = pygame.mouse.get_pos()
+    running = True
+    while running:
+        events = pygame.event.get()
+        mouse_pos = pygame.mouse.get_pos()
 
-    for event in events:
-        if event.type == pygame.QUIT:
-            running = False
+        for event in events:
+            if event.type == pygame.QUIT:
+                return False  # User closed window, don't start game
+            for b in buttons:
+                b.handle_event(event)
+
+        # Check if start button was clicked
+        if game_should_start:
+            return True  # Exit menu and start game
+
         for b in buttons:
-            b.handle_event(event)
+            b.update(mouse_pos)
 
-    for b in buttons:
-        b.update(mouse_pos)
-
-    # background
-    bg = assets.get("homeMenu_bg.jpg")
-    if bg:
-        if bg.get_size() != SCREEN_SIZE:
-            bg_draw = pygame.transform.smoothscale(bg, SCREEN_SIZE)
+        # background
+        bg = assets.get("homeMenu_bg.jpg")
+        if bg:
+            if bg.get_size() != SCREEN_SIZE:
+                bg_draw = pygame.transform.smoothscale(bg, SCREEN_SIZE)
+            else:
+                bg_draw = bg
+            screen.blit(bg_draw, (0, 0))
         else:
-            bg_draw = bg
-        screen.blit(bg_draw, (0, 0))
-    else:
-        screen.fill((30, 30, 30))
+            screen.fill((30, 30, 30))
 
-    # draw buttons
-    for b in buttons:
-        b.draw(screen)
+        # draw buttons
+        for b in buttons:
+            b.draw(screen)
 
-    pygame.display.flip()
-    clock.tick(60)
+        pygame.display.flip()
+        clock.tick(60)
 
-pygame.quit()
+    return False
