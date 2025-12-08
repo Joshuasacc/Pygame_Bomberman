@@ -1,10 +1,11 @@
 import pygame
 import sys
 from assets2 import load_assets
+from game2 import run_game
 
 pygame.init()
 
-SCREEN_SIZE = (800, 600)
+SCREEN_SIZE = (1300, 700)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("Home Menu")
 clock = pygame.time.Clock()
@@ -93,7 +94,7 @@ def create_row_buttons(labels, image_keys, callbacks, y=300, btn_w=180, btn_h=60
 
     return btns
 
-labels = ["START"]
+labels = [""]
 image_keys = ["start_btn"]
 callbacks = [start_game]
 

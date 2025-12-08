@@ -3,6 +3,9 @@
 import pygame
 import gamesetting as gs
 
+while pygame.mixer.get_busy():
+    pass
+
 class Assets:
     def __init__(self):
         # DO NOT SCALE the sprite sheet if it's already the correct size (325x257)
@@ -80,9 +83,6 @@ class Assets:
             apply_colorkey=True  # ← Only apply colorkey for enemy sprites
         )    
     
-
-    
-
         #This is from gemini as a test
         # --- ADD THIS CODE BELOW ---
         # Create a Green Background Block manually
