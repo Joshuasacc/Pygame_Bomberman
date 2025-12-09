@@ -15,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
     self.speed = gs.ENEMIES[self.type]["speed"]            # Speed of the enemy
     self.wall_hack = gs.ENEMIES[self.type]["wall_hack"]       # Enemy can move through walls 
     self.chase_player = gs.ENEMIES[self.type]["chase_player"]    # Enemy will chase the player
-    self.Los = gs.ENEMIES[self.type]["LoS"] * size                # Distance enemy can see player
+    self.LoS = gs.ENEMIES[self.type]["LoS"] * size                # Distance enemy can see player
     self.see_player_hack = gs.ENEMIES[self.type]["see_player_hack"] * size # # Enemy can see player through walls 
 
     # Level Matrix spawn coordinates
@@ -61,8 +61,8 @@ class Enemy(pygame.sprite.Sprite):
   def draw(self, window, x_offset=0, y_offset=0):
     """Render enemy sprite with camera offsets applied to both axes."""
     window.blit(self.image, (int(self.x) - int(x_offset), int(self.y) - int(y_offset)))
-    pygame.draw.line(window, "black", (self.start_pos[0] - x_offset, self.start_pos[1]),
-                     (self.end_pos[0] - x_offset, self.end_pos[1]), 2)
+    pygame.draw.line(window, "black", (self.start_pos[0] - x_offset, self.start_pos[1] -y_offset),
+                     (self.end_pos[0] - x_offset, self.end_pos[1] - y_offset), 2)
 
   def movement(self):
     """Method that incorporate all movement conditions to enable
@@ -89,6 +89,20 @@ class Enemy(pygame.sprite.Sprite):
 
     # Collision detection with Bombs
     self.new_direction(self.GAME.groups["bomb"], move_direction, directions)
+
+    # Chase the player if Applicable
+    if self.chase_player: 
+      # If dist greater, pass
+      if self.check_LoS_distance():
+        pass
+      elif self.intersecting_items_with_LoS("hard_block"):
+        pass
+      elif self.intersecting_items_with_LoS("soft_block"):
+        pass
+      elif self.intersecting_items_with_LoS("bomb"):
+        pass
+      else:
+        self.chase_the_player()
 
     # Perform a change of direction if sufficient time has elapsed
     self.change_direction(directions)
@@ -190,5 +204,42 @@ class Enemy(pygame.sprite.Sprite):
 
   def update_line_of_sight_with_player(self):
     """ Update the position of the enemy and player character"""  
-    self.start_pos = self.rect.center
-    self.end_pos = self.GAME.PLAYER.rect.center
+    # self.start_pos = self.rect.center
+    # self.end_pos = self.GAME.PLAYER.rect.center
+    self.start_pos =(self.x, self.y)
+    self.end_pos = (self.GAME.PLAYER.x, self.GAME.PLAYER.y)
+
+  def chase_the_player(self):
+    """Change the direction towards the player if in line of sight"""
+    # Conver pixel coords to row/col coords
+    enemy_col = self.start_pos[0] // self.size
+    enemy_row = self.start_pos[1]// self.size
+    player_col = self.end_pos[0] // self.size
+    player_row = self.end_pos[1] // self.size
+
+    if enemy_col > player_col and ((self.y - gs.Y_OFFSET) % self.size) + 32 == self.size//2:
+      self.action = "walk_left"
+    elif enemy_col < player_col and ((self.y - gs.Y_OFFSET) % self.size) + 32 == self.size//2:
+      self.action = "walk_right"
+    elif enemy_row > player_row and (self.x % self.size) + 32 == self.size//2:    
+      self.action = "walk_up"
+    elif enemy_row < player_row and (self.x % self.size) + 32 == self.size//2:  
+      self.action = "walk_down"
+
+    self.change_dir_timer = pygame.time.get_ticks()
+    
+
+  def check_LoS_distance(self):
+    x_dist = abs(self.end_pos[0] - self.start_pos[0])
+    y_dist = abs(self.end_pos[1] - self.start_pos[1])
+
+    if x_dist > self.LoS or y_dist > self.LoS:
+      return True
+    return False
+  
+  def intersecting_items_with_LoS(self,group):
+    """Retrun True of False, if item obstructing LoS"""
+    for item in self.GAME.groups[group]:
+      if item.rect.clipline(self.start_pos, self.end_pos):
+        return True
+    return False  
