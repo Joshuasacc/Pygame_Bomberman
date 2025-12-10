@@ -206,10 +206,15 @@ class Character(pygame.sprite.Sprite):
         # 1. Get a list of all blocks we are touching
         hard_hits = pygame.sprite.spritecollide(self, self.GAME.groups["hard_block"], False)
         soft_hits = pygame.sprite.spritecollide(self, self.GAME.groups["soft_block"], False)
-        all_hits = hard_hits + soft_hits
+        bomb_hits = pygame.sprite.spritecollide(self, self.GAME.groups["bomb"], False)
+        all_hits = hard_hits + soft_hits + bomb_hits
 
         # 2. Check each block to see if it is passable
         for block in all_hits:
+
+            # if block in bomb_hits and hasattr(self, "bomb_hack") and self.bomb_hack:
+            #     continue
+
             if hasattr(block, 'passable') and block.passable == False:
                 return True  # We hit a solid wall!
             
@@ -310,9 +315,11 @@ class Character(pygame.sprite.Sprite):
         
         self.alive = True
         self.speed = 3  # Pixels per frame when moving
-        self.bomb_limit = 1
+        self.bomb_limit = 2
         self.remote = True
-        self.power = 2
+        self.power = 1
+        self.wall_hack = False
+
 
 
         # CHARACTER ACTION/ANIMATION STATE
@@ -387,6 +394,7 @@ class Bomb(pygame.sprite.Sprite):
         self.passable = True  # Bombs are passable until they explode
         self.remote = remote
         self.power = power
+        self.bomb_hack = False
 
         # Image
         self.index = 0

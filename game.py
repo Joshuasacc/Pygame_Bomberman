@@ -368,7 +368,7 @@ class Game:
       power_up = "speed_up"
     elif self.level == 1:
       power_up = "bomb_up"
-    elif self.player.bomb_limit <= 2 or self.player.power <= 2:
+    elif self.PLAYER.bomb_limit <= 2 or self.player.power <= 2:
       power_up = choice (["bomb_up", "fire_up"])
     else:
       if self.player.wall_hack:
