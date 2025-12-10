@@ -8,7 +8,6 @@ class Assets:
         # DO NOT SCALE the sprite sheet if it's already the correct size (325x257)
         # Assuming "owncreation.png" is the 325x257 image
         self.sprite_sheet = self.load_sprite_sheet("images", "owncreation.png") # Removed hardcoded size | THIS IS FOR CHARACTER
-        #self.sprite_sheet = self.load_sprite_sheet("images","BombermanNES2-tiles.png")
         self.player_char = self.load_sprite_range(
             gs.PLAYER, 
             self.sprite_sheet, 
@@ -19,7 +18,6 @@ class Assets:
             resize=True # Added resize to scale it up to a visible game size, e.g., 32x32
         )
 
-        #self.sprite_sheet = self.load_sprite_sheet("images", "BombermanPCE-tiles.png") # Removed hardcoded size
         self.sprite_sheet = self.load_sprite_sheet("images", "sprite_sheet (1).png") # Removed hardcoded size | THIS IS FOR BLOCKS # sprite_sheet (1).png
         self.hard_block = self.load_sprite_range(
             gs.HARD_BLOCK, 

@@ -309,7 +309,7 @@ class Character(pygame.sprite.Sprite):
         self.set_player_position()
         
         self.alive = True
-        self.speed = 2  # Pixels per frame when moving
+        self.speed = 5  # Pixels per frame when moving
         self.bomb_limit = 2
         self.remote = True
         self.power = 2
@@ -352,7 +352,7 @@ class Character(pygame.sprite.Sprite):
         if self.lives < 0:
             self.GAME.MAIN.running = False
             return
-        
+        self.GAME.regenerate_stage()
         self.set_player(self.image_dict)
 
     def deadly_collision(self, group):
