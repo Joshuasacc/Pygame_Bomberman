@@ -162,7 +162,7 @@ class Character(pygame.sprite.Sprite):
         debug_rect = self.rect.copy()
         debug_rect.x -= int(x_offset)
         debug_rect.y -= int(y_offset)
-        pygame.draw.rect(window, gs.RED, debug_rect, 2)  # Red box, 2px thick
+        #pygame.draw.rect(window, gs.RED, debug_rect, 2)  # Red box, 2px thick
 
     def animate(self, action):
         """
@@ -368,7 +368,7 @@ class Character(pygame.sprite.Sprite):
         self.alive = True
         self.speed = 3  # Pixels per frame when moving
         self.bomb_limit = 1
-        self.remote = True  #False means no remote detonator dapat naka False to para di macontrol yung bomb
+        self.remote = False  #False means no remote detonator dapat naka False to para di macontrol yung bomb
         self.power = 1
         self.wall_hack = False
         self.bomb_hack = False
@@ -376,15 +376,11 @@ class Character(pygame.sprite.Sprite):
         self.invisibility = False
         self.invisibility_timer = None
 
-
-
-
         # CHARACTER ACTION/ANIMATION STATE
         self.action = "walk_left"  # Current animation direction
 
         # Bomb Planted
         self.bomb_planted = 0
-
 
         # ANIMATION FRAME TRACKING
         self.index = 0  # Current frame in animation sequence
