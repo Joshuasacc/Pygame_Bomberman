@@ -59,6 +59,7 @@ class Character(pygame.sprite.Sprite):
 
         self.set_player(image_dict)
 
+        self.score = 0
         self.lives = 3
 
     def input(self, events):
