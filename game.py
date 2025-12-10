@@ -52,7 +52,8 @@ class Game:
       "specials" : pygame.sprite.Group(),      # Special items/power-ups
       "explosion": pygame.sprite.Group(),     # Explosion effects
       "enemies": pygame.sprite.Group(),      # Enemy characters
-      "player": pygame.sprite.Group()         # Player character
+      "player": pygame.sprite.Group(),         # Player character
+      "scores": pygame.sprite.Group()          # Score indicators
     }
     
     # Create player character at starting position (grid: row 3, col 2)

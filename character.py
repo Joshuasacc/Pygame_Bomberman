@@ -402,7 +402,11 @@ class Character(pygame.sprite.Sprite):
                 self.action = "dead_anim"
                 self.alive = False
                 return
-
+    
+    def update_score(self,score):
+        """UPDATE THE PLAYER SCORE"""
+        self.score += score
+        
 class Bomb(pygame.sprite.Sprite):
     def __init__(self,game, image_list, group, power, row_num, col_num, size, remote):
         super().__init__(group)

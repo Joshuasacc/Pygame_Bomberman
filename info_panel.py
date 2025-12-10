@@ -78,3 +78,30 @@ class InfoPanel:
     else:
       score_images = [self.black_nums[int(digit)][0] for digit in str(score)]
     return score_images  
+
+class Scoring(pygame.sprite.Sprite):
+     score_bonus = 0
+
+     def __init__(self, game, group, score, xpos, ypos):
+        super().__init__(group)
+        Scoring.score_bonus += 1
+
+        self.GAME = game
+        self.score = score if Scoring.score_bonus <= 1 else score * 2
+
+        self.time = pygame.time.get_ticks()
+        self.x = xpos
+        self.y = ypos
+        
+        self.image = self.GAME.ASSETS.score_images[self.score][0]
+        self.rect = self.image.get_rect(center=(self.x, self.y))
+
+     def update(self):
+      if pygame.time.get_ticks() - self.time >= 1000:
+        self.kill()
+        Scoring.score_bonus -= 1
+        self.GAME.PLAYER.update_score(self.score)
+
+     def draw(self, window, x_offset=0, y_offset=0):  
+       window.blit(self.image, (self.rect.x - x_offset, self.rect.y - y_offset))
+
