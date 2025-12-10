@@ -159,7 +159,7 @@ class Special_Soft_Block(Soft_Block):
   def __init__(self, game, images, group, row_num, col_num, special_type):
     super().__init__(game, images, group, row_num, col_num) 
 
-    self.special_type = "flame_pass"
+    self.special_type = "remote"
     print((self.row, self.col))
 
   def kill(self):
