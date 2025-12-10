@@ -202,6 +202,15 @@ class Assets:
         left_word_sprite = self.load_sprites(self.sprite_sheet, 0*16, 13*16, 64, 16)
         self.left_word = pygame.transform.scale(left_word_sprite, (256, 64))
         self.left_word.set_colorkey(gs.BLACK)
+        
+        start_screen_img = self.load_sprite_sheet("images", "Bomberman start screen.png")
+        self.start_screen = pygame.transform.scale(start_screen_img, (gs.SCREENWIDTH, gs.SCREENHEIGHT))
+        
+        pointer_img = self.load_sprite_sheet("images", "pointer.png")
+        self.start_screen_pointer = pygame.transform.scale(pointer_img, (32, 32))
+
+
+
 
         #This is from gemini as a test
         # --- ADD THIS CODE BELOW ---
