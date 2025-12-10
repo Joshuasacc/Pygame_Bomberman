@@ -114,7 +114,7 @@ class Character(pygame.sprite.Sprite):
         handled in move() and animation in animate())
         """
         # if there are flame/explosion, then perform a collision check
-        if len(self.GAME.groups["explosion"]) > 0:
+        if len(self.GAME.groups["explosion"]) > 0 and self.flame_pass == False:
             self.deadly_collision(self.GAME.groups["explosion"])
 
         # Perform collision detection with enemies
@@ -333,7 +333,7 @@ class Character(pygame.sprite.Sprite):
         self.wall_hack = False
         self.bomb_hack = False
         self.flame_pass = False
-        
+
 
 
 
