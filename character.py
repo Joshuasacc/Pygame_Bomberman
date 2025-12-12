@@ -354,11 +354,16 @@ class Character(pygame.sprite.Sprite):
         # Character position
         self.x = self.col_num * self.size
         self.y = (self.row_num * self.size) + gs.Y_OFFSET
+        # Update rect position to match new world position
+        if hasattr(self, 'rect') and hasattr(self, 'offset'):
+            self.rect.topleft = (int(self.x + self.offset), int(self.y + self.offset))
     
     def set_player_images(self):
         """Character images set"""
         self.image = self.image_dict[self.action][self.index]
-        self.rect = self.image.get_rect(topleft=(self.x + self.offset, self.y + self.offset))
+        # Update rect position if it exists (during initialization, rect is created later)
+        if hasattr(self, 'rect') and hasattr(self, 'offset'):
+            self.rect.topleft = (int(self.x + self.offset), int(self.y + self.offset))
 
     def set_player(self, image_dict):
          # CHARACTER ATTRIBUTES
@@ -366,7 +371,7 @@ class Character(pygame.sprite.Sprite):
         self.set_player_position()
         
         self.alive = True
-        self.speed = 3  # Pixels per frame when moving
+        self.speed = 3.5  # Pixels per frame when moving
         self.bomb_limit = 1
         self.remote = False  #False means no remote detonator dapat naka False to para di macontrol yung bomb
         self.power = 1

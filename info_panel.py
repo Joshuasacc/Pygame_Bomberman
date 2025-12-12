@@ -6,7 +6,6 @@ class InfoPanel:
     self.GAME = game
     self.images = images
 
-
     self.black_nums = self.images.numbers_black
 
     # Level timer
@@ -22,7 +21,7 @@ class InfoPanel:
      # level timer
      self.time_total = gs.STAGE_TIME  # Total time for level in seconds
      self.timer_start = pygame.time.get_ticks()  # Start time in milliseconds
-     self.time = 200
+     self.time = 250  # TIMER
 
      # Images for Info Panel
      self.time_image = self.update_time_image()

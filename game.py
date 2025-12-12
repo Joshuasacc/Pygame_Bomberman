@@ -306,7 +306,19 @@ class Game:
       matrix.append(line)
     self.insert_hard_block_into_matrix(matrix)  
     self.insert_soft_block_into_matrix(matrix)
-    self.insert_power_up_into_matrix(matrix, self.level_special)
+    
+    # Add 3 different power-ups to the stage
+    power_ups_added = []
+    for i in range(3):
+        special = self.select_a_special()
+        # Make sure we don't add the same power-up twice
+        attempts = 0
+        while special in power_ups_added and attempts < 20:
+            special = self.select_a_special()
+            attempts += 1
+        power_ups_added.append(special)
+        self.insert_power_up_into_matrix(matrix, special)
+    
     self.insert_power_up_into_matrix(matrix, "exit")
     self.insert_enemies_into_level(matrix)
     for row in matrix:
@@ -414,8 +426,13 @@ class Game:
     self.level_info.set_timer()
     self.level_matrix = self.generate_level_matrix(gs.ROWS, gs.COLS)
 
-    # Reset the camera x position back to zrro
-    self.camera_x_offset = 0
+    # Reset all camera positions back to origin
+    self.x_camera_offset = 0
+    self.y_camera_offset = 0
+    self.cam_target_x = 0
+    self.cam_target_y = 0
+    # Stop all music before transition
+    self.stage_ending_music.stop()
     self.level_transition = LevelTransition(self, self.ASSETS, self.level)
     self.music_playing = False
 
@@ -457,20 +474,20 @@ class Game:
       power_up = "speed_up"
     elif self.level == 1:
       power_up = "bomb_up"
-    elif self.PLAYER.bomb_limit <= 2 or self.player.power <= 2:
+    elif self.PLAYER.bomb_limit <= 2 or self.PLAYER.power <= 2:
       power_up = choice (["bomb_up", "fire_up"])
     else:
-      if self.player.wall_hack:
+      if self.PLAYER.wall_hack:
         special.remove("wall_hack")
-      if self.player.remote.detonate:
+      if self.PLAYER.remote:
         special.remove("remote")    
-      if self.player.bomb_hack:
+      if self.PLAYER.bomb_hack:
         special.remove("bomb_pass") 
-      if self.player.flame_hack:
+      if self.PLAYER.flame_pass:
         special.remove("flame_pass")    
-      if self.player.bomb_limit == 10:
+      if self.PLAYER.bomb_limit == 10:
         special.remove("bomb_up")
-      if self.player.power == 10:
+      if self.PLAYER.power == 10:
         special.remove("fire_up")
       power_up = choice(special) 
     return power_up       
@@ -479,9 +496,17 @@ class Game:
   def new_stage(self):
     """Increase the stage level number, and selects a new level specials"""
     self.level += 1
-    self.level_special = self.select_a_special()
+    # Reset player position first before regenerating stage
+    self.PLAYER.row_num = 3
+    self.PLAYER.col_num = 2
     self.PLAYER.set_player_position()
     self.PLAYER.set_player_images()
+    # Reset player state for new stage
+    self.PLAYER.alive = True
+    self.PLAYER.action = "walk_left"
+    self.PLAYER.index = 0
+    # Select power-up and regenerate stage
+    self.level_special = self.select_a_special()
     self.regenerate_stage()
     print(self.level)
 

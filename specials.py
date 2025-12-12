@@ -42,9 +42,11 @@ class Special(pygame.sprite.Sprite):
          # activate power up
          self.power_up_activate[self.name](self.GAME.PLAYER)
          if self.name == "exit":
+            # Clear exit from level matrix and remove sprite
+            self.GAME.level_matrix[self.row][self.col] = "_"
             self.GAME.bg_music.stop()
             self.GAME.bg_music_special.stop()
-            #self.GAME.PLAYER.update_score(self.score)
+            self.kill()
             return
          self.GAME.level_matrix[self.row][self.col] = "_"
          self.GAME.ASSETS.sounds["Bomberman SFX (4).wav"].play()
